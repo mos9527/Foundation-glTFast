@@ -58,7 +58,7 @@ namespace GLTFast.Schema
             {
                 writer.AddProperty("specularFactor", specularFactor);
             }
-            if (specularTexture != null)
+            if (specularTexture != null && specularTexture.index >= 0)
             {
                 writer.AddProperty("specularTexture");
                 specularTexture.GltfSerialize(writer);
@@ -71,7 +71,7 @@ namespace GLTFast.Schema
             {
                 writer.AddArrayProperty("specularColorFactor", specularColorFactor);
             }
-            if (specularColorTexture != null)
+            if (specularColorTexture != null && specularColorTexture.index >= 0)
             {
                 writer.AddProperty("specularColorTexture");
                 specularColorTexture.GltfSerialize(writer);

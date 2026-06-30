@@ -42,11 +42,11 @@ namespace GLTFast.Export
                 using var indexBuffer = m_Mesh.GetIndexBuffer();
                 m_IndexData = new NativeArray<TIndex>(indexBuffer.count, Allocator.Persistent);
                 AsyncGPUReadbackRequest request;
-                if (!sync)
-                {
-                    request = await AsyncGPUReadback.RequestIntoNativeArrayAsync(ref m_IndexData, indexBuffer);
-                }
-                else
+                //if (!sync)
+                //{
+                //    request = await AsyncGPUReadback.RequestIntoNativeArrayAsync(ref m_IndexData, indexBuffer);
+                //}
+                //else
                 {
                     request = AsyncGPUReadback.RequestIntoNativeArray(ref m_IndexData, indexBuffer);
                     request.WaitForCompletion();
@@ -66,11 +66,11 @@ namespace GLTFast.Export
                 using var vertexBuffer = m_Mesh.GetVertexBuffer(stream);
                 m_VertexData[stream] = new NativeArray<byte>(vertexBuffer.count * vertexBuffer.stride, Allocator.Persistent);
                 AsyncGPUReadbackRequest request;
-                if (!sync)
-                {
-                    request = await AsyncGPUReadback.RequestIntoNativeArrayAsync(ref m_VertexData[stream], vertexBuffer);
-                }
-                else
+                //if (!sync)
+                //{
+                //    request = await AsyncGPUReadback.RequestIntoNativeArrayAsync(ref m_VertexData[stream], vertexBuffer);
+                //}
+                //else
                 {
                     request = AsyncGPUReadback.RequestIntoNativeArray(ref m_VertexData[stream], vertexBuffer);
                     request.WaitForCompletion();

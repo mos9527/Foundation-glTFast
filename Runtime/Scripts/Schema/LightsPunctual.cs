@@ -35,6 +35,13 @@ namespace GLTFast.Schema
         /// <inheritdoc cref="RootExtensions.JsonUtilityCleanup"/>
         public bool JsonUtilityCleanup()
         {
+            if (lights != null)
+            {
+                foreach (var light in lights)
+                {
+                    light.JsonUtilityCleanup();
+                }
+            }
             return lights != null;
         }
     }

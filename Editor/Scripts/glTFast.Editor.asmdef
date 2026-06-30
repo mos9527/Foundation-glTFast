@@ -15,7 +15,9 @@
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
-    "precompiledReferences": [],
+    "precompiledReferences": [
+        "System.IO.Compression.FileSystem.dll"
+    ],
     "autoReferenced": true,
     "defineConstraints": [],
     "versionDefines": [

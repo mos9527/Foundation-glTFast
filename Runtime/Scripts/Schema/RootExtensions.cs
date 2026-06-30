@@ -19,6 +19,10 @@ namespace GLTFast.Schema
         // ReSharper disable once InconsistentNaming
         public MaterialsVariantsRootExtension KHR_materials_variants;
 
+        /// <inheritdoc cref="FoundationColorManagement"/>
+        // ReSharper disable once InconsistentNaming
+        public FoundationColorManagement EXT_foundation_colormanagement;
+
         internal void GltfSerialize(JsonWriter writer)
         {
             writer.AddObject();
@@ -31,6 +35,11 @@ namespace GLTFast.Schema
             {
                 writer.AddProperty("KHR_materials_variants");
                 KHR_materials_variants.GltfSerialize(writer);
+            }
+            if (EXT_foundation_colormanagement != null)
+            {
+                writer.AddProperty("EXT_foundation_colormanagement");
+                EXT_foundation_colormanagement.GltfSerialize(writer);
             }
             writer.Close();
         }
@@ -52,7 +61,8 @@ namespace GLTFast.Schema
             }
 
             return KHR_lights_punctual != null
-                || KHR_materials_variants != null;
+                || KHR_materials_variants != null
+                || EXT_foundation_colormanagement != null;
         }
     }
 }

@@ -122,12 +122,12 @@ namespace GLTFast.Schema
             {
                 writer.AddProperty("roughnessFactor", roughnessFactor);
             }
-            if (BaseColorTexture != null)
+            if (BaseColorTexture != null && BaseColorTexture.index >= 0)
             {
                 writer.AddProperty("baseColorTexture");
                 BaseColorTexture.GltfSerialize(writer);
             }
-            if (MetallicRoughnessTexture != null)
+            if (MetallicRoughnessTexture != null && MetallicRoughnessTexture.index >= 0)
             {
                 writer.AddProperty("metallicRoughnessTexture");
                 MetallicRoughnessTexture.GltfSerialize(writer);

@@ -104,6 +104,7 @@ namespace GLTFast.Export
         List<BufferView> m_BufferViews;
 
         List<ImageExportBase> m_ImageExports;
+        List<FoundationEnvironmentHdriSidecar> m_FoundationEnvironmentSidecars;
         List<SamplerKey> m_SamplerKeys;
         List<UnityEngine.Material> m_UnityMaterials;
         List<UnityEngine.Mesh> m_UnityMeshes;
@@ -299,6 +300,11 @@ namespace GLTFast.Export
             var light = KhrLightsPunctual.ConvertToLight(uLight);
             light.intensity *= m_Settings.LightIntensityFactor;
 
+            if (light.extensions?.EXT_foundation_lights != null)
+            {
+                RegisterExtensionUsage(Extension.FoundationLights, false);
+            }
+
             if (m_Lights == null)
             {
                 m_Lights = new List<LightPunctual>();
@@ -360,6 +366,36 @@ namespace GLTFast.Export
                 m_Gltf.scene = 0;
             }
             return (uint)m_Scenes.Count - 1;
+        }
+
+        /// <summary>
+        /// Attaches EXT_foundation_environment to a scene from current RenderSettings.
+        /// </summary>
+        /// <param name="sceneIndex">glTF scene index returned by <see cref="AddScene"/>.</param>
+        public void AddFoundationEnvironment(uint sceneIndex)
+        {
+            if (m_Scenes == null || sceneIndex >= m_Scenes.Count)
+            {
+                return;
+            }
+
+            var result = FoundationEnvironmentExport.Gather();
+            if (result?.Environment == null)
+            {
+                return;
+            }
+
+            CertifyNotDisposed();
+            var scene = m_Scenes[(int)sceneIndex];
+            scene.extensions = scene.extensions ?? new SceneExtensions();
+            scene.Extensions.EXT_foundation_environment = result.Environment;
+            RegisterExtensionUsage(Extension.FoundationEnvironment, false);
+
+            if (result.HdriSidecar != null)
+            {
+                m_FoundationEnvironmentSidecars ??= new List<FoundationEnvironmentHdriSidecar>();
+                m_FoundationEnvironmentSidecars.Add(result.HdriSidecar);
+            }
         }
 
         /// <inheritdoc />
@@ -772,6 +808,10 @@ namespace GLTFast.Export
 
             if (!success) return false;
 
+            success = await BakeFoundationEnvironmentSidecars(directory, sync);
+
+            if (!success) return false;
+
             if (m_BufferStream != null && m_BufferStream.Length > 0)
             {
                 m_Gltf.buffers = new[] {
@@ -802,6 +842,8 @@ namespace GLTFast.Export
                 m_Gltf.extensions.KHR_lights_punctual.lights = m_Lights.ToArray();
             }
 
+            BakeFoundationColorManagement();
+
             m_Gltf.asset = new Asset
             {
                 version = "2.0",
@@ -810,6 +852,18 @@ namespace GLTFast.Export
 
             BakeExtensions();
             return true;
+        }
+
+        void BakeFoundationColorManagement()
+        {
+            RegisterExtensionUsage(Extension.FoundationColorManagement, false);
+            m_Gltf.extensions = m_Gltf.extensions ?? new Schema.RootExtensions();
+            m_Gltf.extensions.EXT_foundation_colormanagement = new FoundationColorManagement
+            {
+                postExposure = Mathf.Log(Schema.Constants.PbrWattsToLumens, 2f),
+                sdr = "SDR / ACES 1.3 / No Look",
+                hdr = "HDR / ACES 1.3 - HDR 1000 nits / No Look"
+            };
         }
 
         void BakeExtensions()
@@ -1874,6 +1928,57 @@ namespace GLTFast.Export
             return true;
         }
 
+        async Task<bool> BakeFoundationEnvironmentSidecars(string directory, bool sync)
+        {
+            if (m_FoundationEnvironmentSidecars == null || string.IsNullOrEmpty(directory))
+            {
+                m_FoundationEnvironmentSidecars = null;
+                return true;
+            }
+
+            var usedNames = new HashSet<string>();
+
+            foreach (var sidecar in m_FoundationEnvironmentSidecars)
+            {
+                var fileName = sidecar.FileName;
+                if (string.IsNullOrEmpty(fileName))
+                {
+                    continue;
+                }
+
+                if (!usedNames.Add(fileName))
+                {
+                    var extension = Path.GetExtension(fileName);
+                    var baseName = Path.GetFileNameWithoutExtension(fileName);
+                    var index = 0;
+                    do
+                    {
+                        fileName = $"{baseName}_{index++}{extension}";
+                    } while (!usedNames.Add(fileName));
+
+                    sidecar.FileName = fileName;
+                    if (sidecar.EnvironmentPayload != null)
+                    {
+                        sidecar.EnvironmentPayload.uri = fileName;
+                    }
+                }
+
+                var destPath = Path.Combine(directory, fileName);
+                if (!DdsRgbFloat32Writer.TryWriteTexture(sidecar.SourceTexture, destPath, true))
+                {
+                    m_Logger?.Warning(LogCode.None, $"Failed to write environment HDRI sidecar: {fileName}");
+                }
+
+                if (!sync)
+                {
+                    await m_DeferAgent.BreakPoint();
+                }
+            }
+
+            m_FoundationEnvironmentSidecars = null;
+            return true;
+        }
+
         static async Task ConvertSkinWeightsAttribute(
             AttributeData attrData,
             uint inputByteStride,
@@ -2382,6 +2487,7 @@ namespace GLTFast.Export
             m_ExtensionsUsedOnly = null;
             m_ExtensionsRequired = null;
             m_ImageExports = null;
+            m_FoundationEnvironmentSidecars = null;
             m_SamplerKeys = null;
             m_UnityMaterials = null;
             m_UnityMeshes = null;

@@ -102,7 +102,8 @@ namespace GLTFast.Export
             }
             if (rootNodes.Count > 0)
             {
-                m_Writer.AddScene(rootNodes.ToArray(), name);
+                var sceneIndex = m_Writer.AddScene(rootNodes.ToArray(), name);
+                m_Writer.AddFoundationEnvironment(sceneIndex);
             }
 
             return success;

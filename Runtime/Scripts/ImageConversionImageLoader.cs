@@ -72,7 +72,7 @@ namespace GLTFast
                 settings.GenerateMipMaps,
                 settings.AnisotropicFilterLevel
                 );
-            texture.LoadImage(data.AsReadOnlySpan(), !readable);
+            texture.LoadImage(data.AsReadOnlySpan().ToArray(), !readable);
             Profiler.EndSample();
             return new ImageResult(texture);
         }

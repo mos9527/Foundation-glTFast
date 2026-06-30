@@ -85,7 +85,7 @@ namespace GLTFast.Export
             light.LightColor = uLight.color.linear;
             light.range = uLight.range;
 
-            // Set Light intensity
+            // Set light intensity
             switch (renderPipeline)
             {
                 case RenderPipeline.BuiltIn:
@@ -102,7 +102,7 @@ namespace GLTFast.Export
                         light.intensity = uLight.intensity;
                     }
                     else
-                    {
+                    {                        
                         switch (lightType)
                         {
                             case LightType.Spot:
@@ -114,7 +114,7 @@ namespace GLTFast.Export
                                 break;
                             case LightType.Rectangle:
                             default:
-                                light.intensity = uLight.intensity;
+                                light.intensity = uLight.intensity;       
                                 break;
                         }
                     }
@@ -123,6 +123,37 @@ namespace GLTFast.Export
                 default:
                     light.intensity = uLight.intensity;
                     break;
+            }
+
+            if (lightType == LightType.Directional)
+            {
+                float angularDiameter = 0f;
+                if (renderPipeline == RenderPipeline.HighDefinition)
+                {
+#if USING_HDRP
+                    if (lightHd != null)
+                    {
+                        angularDiameter = lightHd.angularDiameter * Mathf.Deg2Rad;
+                    }
+#endif
+                }
+                else
+                {
+                    angularDiameter = (uLight.shadows == LightShadows.Soft) 
+                        ? (Schema.Constants.SoftShadowAngularDiameter * Mathf.Deg2Rad) 
+                        : 0f;
+                }
+
+                if (angularDiameter > 0f)
+                {
+                    light.extensions = new LightPunctualExtensions
+                    {
+                        EXT_foundation_lights = new ExtFoundationLights
+                        {
+                            angularDiameter = angularDiameter
+                        }
+                    };
+                }
             }
 
             return light;

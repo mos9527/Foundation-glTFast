@@ -33,7 +33,7 @@ namespace GLTFast
 
             var acos = math.acos(r1.x);
             if (r2.x < 0) acos = math.PI * 2 - acos;
-            result.rotation = acos * math.TODEGREES;
+            result.rotation = math.degrees(acos);
             return result;
         }
     }

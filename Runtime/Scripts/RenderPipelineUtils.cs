@@ -70,10 +70,7 @@ namespace GLTFast
             if (rpAsset != null)
             {
 #if USING_URP
-                if (rpAsset is UniversalRenderPipelineAsset)
-                {
-                    return RenderPipeline.Universal;
-                }
+                return RenderPipeline.Universal;
 #endif
 #if USING_HDRP
                 if (rpAsset is HDRenderPipelineAsset)

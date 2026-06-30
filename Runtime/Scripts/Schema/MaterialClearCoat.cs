@@ -55,12 +55,12 @@ namespace GLTFast.Schema
             {
                 writer.AddProperty("clearcoatRoughnessFactor", clearcoatRoughnessFactor);
             }
-            if (clearcoatRoughnessTexture != null)
+            if (clearcoatRoughnessTexture != null && clearcoatRoughnessTexture.index >= 0)
             {
                 writer.AddProperty("clearcoatRoughnessTexture");
                 clearcoatRoughnessTexture.GltfSerialize(writer);
             }
-            if (clearcoatNormalTexture != null)
+            if (clearcoatNormalTexture != null && clearcoatNormalTexture.index >= 0)
             {
                 writer.AddProperty("clearcoatNormalTexture");
                 clearcoatNormalTexture.GltfSerialize(writer);

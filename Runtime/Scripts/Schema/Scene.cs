@@ -16,11 +16,26 @@ namespace GLTFast.Schema
         /// </summary>
         public uint[] nodes;
 
+        /// <summary>
+        /// Scene extensions.
+        /// </summary>
+        public SceneExtensions extensions;
+
+        /// <summary>
+        /// Scene extensions.
+        /// </summary>
+        public SceneExtensions Extensions => extensions;
+
         internal void GltfSerialize(JsonWriter writer)
         {
             writer.AddObject();
             GltfSerializeName(writer);
             writer.AddArrayProperty("nodes", nodes);
+            if (Extensions != null)
+            {
+                writer.AddProperty("extensions");
+                Extensions.GltfSerialize(writer);
+            }
             writer.Close();
         }
     }

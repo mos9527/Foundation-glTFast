@@ -257,17 +257,17 @@ namespace GLTFast.Schema
                 writer.AddProperty("pbrMetallicRoughness");
                 PbrMetallicRoughness.GltfSerialize(writer);
             }
-            if (NormalTexture != null)
+            if (NormalTexture != null && NormalTexture.index >= 0)
             {
                 writer.AddProperty("normalTexture");
                 NormalTexture.GltfSerialize(writer);
             }
-            if (OcclusionTexture != null)
+            if (OcclusionTexture != null && OcclusionTexture.index >= 0)
             {
                 writer.AddProperty("occlusionTexture");
                 OcclusionTexture.GltfSerialize(writer);
             }
-            if (EmissiveTexture != null)
+            if (EmissiveTexture != null && EmissiveTexture.index >= 0)
             {
                 writer.AddProperty("emissiveTexture");
                 EmissiveTexture.GltfSerialize(writer);

@@ -183,7 +183,7 @@ namespace GLTFast.Editor
             return settings;
         }
 
-        [MenuItem("File/Export Scene/glTF (.gltf)", false, 173)]
+        [MenuItem("File/Export Scene/glTF (.gltf)", false, 170)]
         static async Task ExportSceneMenu()
         {
             try
@@ -196,7 +196,7 @@ namespace GLTFast.Editor
             }
         }
 
-        [MenuItem("File/Export Scene/glTF-Binary (.glb)", false, 174)]
+        [MenuItem("File/Export Scene/glTF-Binary (.glb)", false, 171)]
         static async Task ExportSceneBinaryMenu()
         {
             try
@@ -208,6 +208,99 @@ namespace GLTFast.Editor
                 Debug.LogException(e);
             }
         }
+
+#if UNITY_EDITOR_WIN
+        [MenuItem("File/Export Scene/View in Foundation (PT)", false, 193)]
+        static async Task ViewInFoundationPTMenu()
+        {
+            try
+            {
+                await ViewInFoundation(0);
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
+        }
+
+        [MenuItem("File/Export Scene/View in Foundation (Raster)", false, 194)]
+        static async Task ViewInFoundationRasterMenu()
+        {
+            try
+            {
+                await ViewInFoundation(1);
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
+        }
+
+
+        [MenuItem("File/Export Scene/Run Foundation (No Scene)", false, 201)]
+        static async Task RunFoundationMenu()
+        {
+            try
+            {
+                using var progress = new FoundationProgressScope();
+                progress.Report(0f, "Starting...");
+
+                var buildTask = FoundationBuildProvider.EnsureBuildAsync(progress.Report, 0f, 0.5f);;
+
+                progress.Report(0.75f, "Waiting for Foundation build...");
+                var editorPath = await buildTask;
+
+                progress.Report(0.9f, "Launching Foundation...");
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = editorPath,
+                    UseShellExecute = true,
+                    WorkingDirectory = Path.GetDirectoryName(editorPath)
+                });
+
+                progress.Report(1f, "Done");
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
+        }
+
+        static async Task ViewInFoundation(int renderer)
+        {
+            using var progress = new FoundationProgressScope();
+            progress.Report(0f, "Starting...");
+
+            var buildTask = FoundationBuildProvider.EnsureBuildAsync(progress.Report, 0f, 0.5f);
+
+            var scene = SceneManager.GetActiveScene();
+            FoundationBuildProvider.PrepareExportDirectory();
+            var gltfPath = Path.Combine(
+                FoundationBuildProvider.ExportDirectory,
+                FoundationBuildProvider.ExportedSceneFileName
+            );
+
+            progress.Report(0.55f, $"Exporting scene \"{scene.name}\"...");
+            var settings = GetDefaultSettings(false);
+            var export = new GameObjectExport(settings, logger: new ConsoleLogger());
+            export.AddScene(scene.GetRootGameObjects(), scene.name);
+            await export.SaveToFileAndDispose(gltfPath);
+
+            progress.Report(0.75f, "Waiting for Foundation build...");
+            var editorPath = await buildTask;
+
+            progress.Report(0.9f, "Launching Foundation...");
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = editorPath,
+                Arguments = $"--renderer {renderer} --energy-clamp -2.0 \"{gltfPath}\"",
+                UseShellExecute = true,
+                WorkingDirectory = Path.GetDirectoryName(editorPath)
+            });
+
+            progress.Report(1f, "Done");
+        }
+#endif
 
         static async Task ExportScene(bool binary)
         {

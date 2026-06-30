@@ -55,6 +55,35 @@ namespace GLTFast
                 : 100_000; // glTF 2.0 spec says infinite, but float.MaxValue
                            // breaks spot lights in URP.
 
+            if (lightSource.GetLightType() == LightPunctual.Type.Directional)
+            {
+                var renderPipeline = RenderPipelineUtils.RenderPipeline;
+                if (renderPipeline == RenderPipeline.HighDefinition)
+                {
+#if USING_HDRP
+                    var lightHd = lightDestination.gameObject.GetComponent<HDAdditionalLightData>()
+                                  ?? lightDestination.gameObject.AddComponent<HDAdditionalLightData>();
+                    var ext = lightSource.extensions?.EXT_foundation_lights;
+                    if (ext != null)
+                    {
+                        lightHd.angularDiameter = ext.angularDiameter * Mathf.Rad2Deg;
+                    }
+#endif
+                }
+                else
+                {
+                    var ext = lightSource.extensions?.EXT_foundation_lights;
+                    if (ext != null && ext.angularDiameter > 0f)
+                    {
+                        lightDestination.shadows = LightShadows.Soft;
+                    }
+                    else
+                    {
+                        lightDestination.shadows = LightShadows.Hard;
+                    }
+                }
+            }
+
             if (lightSource.GetLightType() == LightPunctual.Type.Spot)
             {
                 lightDestination.spotAngle = lightSource.spot.outerConeAngle * Mathf.Rad2Deg * 2f;
@@ -106,6 +135,39 @@ namespace GLTFast
                 lightDestination.spot = lightDestination.spot ?? new SpotLight();
                 lightDestination.spot.outerConeAngle = lightSource.spotAngle / Mathf.Rad2Deg * 0.5f;
                 lightDestination.spot.innerConeAngle = lightSource.innerSpotAngle / Mathf.Rad2Deg * 0.5f;
+            }
+
+            if (lightSource.type == LightType.Directional)
+            {
+                float angularDiameter = 0f;
+                var renderPipeline = RenderPipelineUtils.RenderPipeline;
+                if (renderPipeline == RenderPipeline.HighDefinition)
+                {
+#if USING_HDRP
+                    var lightHd = lightSource.gameObject.GetComponent<HDAdditionalLightData>();
+                    if (lightHd != null)
+                    {
+                        angularDiameter = lightHd.angularDiameter * Mathf.Deg2Rad;
+                    }
+#endif
+                }
+                else
+                {
+                    angularDiameter = (lightSource.shadows == LightShadows.Soft) 
+                        ? Constants.SoftShadowAngularDiameter * Mathf.Deg2Rad
+                        : 0f;   
+                }
+
+                if (angularDiameter > 0f)
+                {
+                    lightDestination.extensions = new LightPunctualExtensions
+                    {
+                        EXT_foundation_lights = new ExtFoundationLights
+                        {
+                            angularDiameter = angularDiameter
+                        }
+                    };
+                }
             }
         }
 

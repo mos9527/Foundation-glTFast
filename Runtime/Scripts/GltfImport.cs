@@ -1487,10 +1487,7 @@ namespace GLTFast
                 return false;
             }
 
-            if (!CheckExtensionSupport())
-            {
-                return false;
-            }
+            CheckExtensionSupport();
 
             if (Root.Buffers != null)
             {
@@ -1631,7 +1628,7 @@ namespace GLTFast
             }
 #endif
             Logger?.Log(
-                required ? LogType.Error : LogType.Warning,
+                LogType.Warning,
                 LogCode.ExtensionUnsupported,
                 ext
                 );

@@ -79,6 +79,11 @@ namespace GLTFast.Schema
         /// </summary>
         public SpotLight spot;
 
+        /// <summary>
+        /// Extensions on the light
+        /// </summary>
+        public LightPunctualExtensions extensions;
+
         /// <inheritdoc cref="Type"/>
         // Field is public for unified serialization only. Warn via Obsolete attribute.
         [Obsolete("Use GetLightType and SetLightType for access.")]
@@ -143,7 +148,23 @@ namespace GLTFast.Schema
                 writer.AddProperty("spot");
                 spot.GltfSerialize(writer);
             }
+            if (extensions != null)
+            {
+                writer.AddProperty("extensions");
+                extensions.GltfSerialize(writer);
+            }
             writer.Close();
+        }
+
+        /// <summary>
+        /// Cleans up invalid parsing artifacts created by <see cref="GltfJsonUtilityParser"/>.
+        /// </summary>
+        public void JsonUtilityCleanup()
+        {
+            if (extensions != null && !extensions.JsonUtilityCleanup())
+            {
+                extensions = null;
+            }
         }
 
     }

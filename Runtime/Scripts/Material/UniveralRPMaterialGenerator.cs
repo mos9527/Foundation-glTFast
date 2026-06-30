@@ -36,9 +36,9 @@ namespace GLTFast.Materials
 
         bool m_SupportsCameraOpaqueTexture;
 
-        public UniversalRPMaterialGenerator(UniversalRenderPipelineAsset renderPipelineAsset)
+        public UniversalRPMaterialGenerator()
         {
-            m_SupportsCameraOpaqueTexture = renderPipelineAsset.supportsCameraOpaqueTexture;
+            m_SupportsCameraOpaqueTexture = true;
         }
 
         protected override void SetDoubleSided(MaterialBase gltfMaterial, Material material)

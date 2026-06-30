@@ -66,7 +66,7 @@ namespace GLTFast.Schema
             {
                 writer.AddArrayProperty("sheenColorFactor", sheenColorFactor);
             }
-            if (sheenColorTexture != null)
+            if (sheenColorTexture != null && sheenColorTexture.index >= 0)
             {
                 writer.AddProperty("sheenColorTexture");
                 sheenColorTexture.GltfSerialize(writer);
@@ -75,7 +75,7 @@ namespace GLTFast.Schema
             {
                 writer.AddProperty("sheenRoughnessFactor", sheenRoughnessFactor);
             }
-            if (sheenRoughnessTexture != null)
+            if (sheenRoughnessTexture != null && sheenRoughnessTexture.index >= 0)
             {
                 writer.AddProperty("sheenRoughnessTexture");
                 sheenRoughnessTexture.GltfSerialize(writer);

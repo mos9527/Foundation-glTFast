@@ -73,6 +73,18 @@ namespace GLTFast
         /// <a href="https://github.com/KhronosGroup/glTF/blob/main/extensions/2.0/Vendor/EXT_texture_webp/README.md">EXT_texture_webp</a> glTF extension
         /// </summary>
         TextureWebP,
+        /// <summary>
+        /// Foundation private scene environment extension.
+        /// </summary>
+        FoundationEnvironment,
+        /// <summary>
+        /// Foundation private root color management extension.
+        /// </summary>
+        FoundationColorManagement,
+        /// <summary>
+        /// Foundation private light extension.
+        /// </summary>
+        FoundationLights,
     }
 
     /// <summary>
@@ -112,6 +124,12 @@ namespace GLTFast
         public const string MaterialsSpecular = "KHR_materials_specular";
         /// <inheritdoc cref="Extension.MaterialsVariants"/>
         public const string MaterialsVariants = "KHR_materials_variants";
+        /// <inheritdoc cref="Extension.FoundationEnvironment"/>
+        public const string FoundationEnvironment = "EXT_foundation_environment";
+        /// <inheritdoc cref="Extension.FoundationColorManagement"/>
+        public const string FoundationColorManagement = "EXT_foundation_colormanagement";
+        /// <inheritdoc cref="Extension.FoundationLights"/>
+        public const string FoundationLights = "EXT_foundation_lights";
 
         /// <summary>
         /// Returns the official name of the glTF extension
@@ -154,6 +172,12 @@ namespace GLTFast
                     return MaterialsSpecular;
                 case Extension.MaterialsSheen:
                     return MaterialsSheen;
+                case Extension.FoundationEnvironment:
+                    return FoundationEnvironment;
+                case Extension.FoundationColorManagement:
+                    return FoundationColorManagement;
+                case Extension.FoundationLights:
+                    return FoundationLights;
                 default:
                     return null;
             }

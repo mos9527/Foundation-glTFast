@@ -108,7 +108,7 @@ namespace GLTFast.Export
                 exportTexture = new Texture2D(
                     texture.width,
                     texture.height,
-                    !hasAlpha && SystemInfo.IsFormatSupported(GraphicsFormat.R8G8B8_UNorm, GraphicsFormatUsage.Sample)
+                    !hasAlpha && SystemInfo.IsFormatSupported(GraphicsFormat.R8G8B8_UNorm, FormatUsage.Sample)
                         ? GraphicsFormat.R8G8B8_UNorm
                         : GraphicsFormat.R8G8B8A8_UNorm,
                     TextureCreationFlags.DontInitializePixels | TextureCreationFlags.DontUploadUponCreate

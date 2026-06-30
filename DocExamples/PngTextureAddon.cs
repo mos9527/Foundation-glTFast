@@ -46,7 +46,7 @@ namespace GLTFast.Documentation.Examples
 #if UNITY_IMAGECONVERSION
             Profiler.BeginSample("LoadPNG");
             var texture = CreateEmptyTexture(linear, generateMipMaps);
-            var success = texture.LoadImage(data.AsReadOnlySpan(), !readable);
+            var success = texture.LoadImage(data.AsReadOnlySpan().ToArray(), !readable);
             Profiler.EndSample();
             if (success)
             {
