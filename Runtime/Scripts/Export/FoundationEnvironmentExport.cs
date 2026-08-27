@@ -45,7 +45,7 @@ namespace GLTFast.Export
                 {
                     type = "color",
                     color = new[] { linear.r, linear.g, linear.b },
-                    strength = strength / Schema.Constants.PbrWattsToLumens
+                    strength = strength
                 }
             };
         }
@@ -97,7 +97,6 @@ namespace GLTFast.Export
                 }
             }
 
-            strength /= Schema.Constants.PbrWattsToLumens;
             return CreateHdriResult(texture, strength, azimuthOffset);
         }
 

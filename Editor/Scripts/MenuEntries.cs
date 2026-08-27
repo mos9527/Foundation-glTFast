@@ -293,7 +293,7 @@ namespace GLTFast.Editor
             System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
             {
                 FileName = editorPath,
-                Arguments = $"--renderer {renderer} --energy-clamp -2.0 \"{gltfPath}\"",
+                Arguments = $"--renderer {renderer} \"{gltfPath}\"",
                 UseShellExecute = true,
                 WorkingDirectory = Path.GetDirectoryName(editorPath)
             });
