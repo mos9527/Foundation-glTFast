@@ -210,6 +210,10 @@ namespace GLTFast.Export
                     // root level node - calculate transform based on scene origin
                     var trans = math.mul(sceneOrigin.Value, transform.localToWorldMatrix);
                     trans.Decompose(out translation, out rotation, out scale);
+                    if (!IsFinite(rotation))
+                    {
+                        rotation = quaternion.identity;
+                    }
                 }
                 else
                 {
@@ -241,6 +245,12 @@ namespace GLTFast.Export
             }
 
             return success;
+        }
+
+        static bool IsFinite(quaternion q)
+        {
+            return math.isfinite(q.value.x) && math.isfinite(q.value.y)
+                && math.isfinite(q.value.z) && math.isfinite(q.value.w);
         }
 
         void AddNodeComponents(
