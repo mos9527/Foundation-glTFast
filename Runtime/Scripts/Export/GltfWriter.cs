@@ -860,7 +860,6 @@ namespace GLTFast.Export
             m_Gltf.extensions = m_Gltf.extensions ?? new Schema.RootExtensions();
             m_Gltf.extensions.EXT_foundation_colormanagement = new FoundationColorManagement
             {
-                postExposure = Mathf.Log(Schema.Constants.PbrWattsToLumens, 2f),
                 sdr = "SDR / ACES 1.3 / No Look",
                 hdr = "HDR / ACES 1.3 - HDR 1000 nits / No Look"
             };

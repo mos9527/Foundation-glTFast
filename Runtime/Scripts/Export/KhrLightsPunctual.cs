@@ -125,6 +125,8 @@ namespace GLTFast.Export
                     break;
             }
 
+            light.intensity *= Schema.Constants.PbrWattsToLumens;
+
             if (lightType == LightType.Directional)
             {
                 float angularDiameter = 0f;
