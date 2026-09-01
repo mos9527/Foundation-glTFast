@@ -12,12 +12,18 @@ namespace GLTFast.Export
     public sealed class FoundationEnvironmentHdriSidecar
     {
         /// <summary>
-        /// Equirectangular source texture (typically an imported EXR HDRI).
+        /// Equirectangular source texture (typically an imported EXR HDRI) encoded via DDS writer.
         /// </summary>
         public UnityEngine.Texture SourceTexture { get; set; }
 
         /// <summary>
-        /// Relative DDS file name referenced by <see cref="FoundationEnvironment.uri"/>.
+        /// Raw pre-encoded HDRI bytes (e.g. the baked default <c>.hdr</c>), written verbatim
+        /// as a sidecar without re-encoding. Mutually exclusive with <see cref="SourceTexture"/>.
+        /// </summary>
+        public byte[] RawBytes { get; set; }
+
+        /// <summary>
+        /// Relative file name referenced by <see cref="FoundationEnvironment.uri"/>.
         /// </summary>
         public string FileName { get; set; }
 

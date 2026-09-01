@@ -74,12 +74,13 @@ namespace GLTFast.Export
 
             if (texture == null)
             {
-                texture = FoundationEnvironmentFallback.LoadDefaultSkyboxHdri?.Invoke();
-                if (texture != null)
+                var rawBytes = FoundationEnvironmentFallback.LoadDefaultSkyboxHdri?.Invoke();
+                if (rawBytes != null && rawBytes.Length > 0)
                 {
                     Debug.LogWarning(
                         "EXT_foundation_environment: Skybox mode has no HDRI texture; " +
                         "exporting baked default skybox HDRI fallback.");
+                    return CreateHdriResultFromRaw(rawBytes, strength, azimuthOffset);
                 }
                 else if (skybox == null)
                 {
@@ -126,6 +127,32 @@ namespace GLTFast.Export
             };
         }
 
+        static FoundationEnvironmentGatherResult CreateHdriResultFromRaw(
+            byte[] rawBytes,
+            float strength,
+            float azimuthOffset)
+        {
+            var fileName = BuildHdriRawFileName();
+            var environment = new FoundationEnvironment
+            {
+                type = "hdri",
+                uri = fileName,
+                projection = "longlat",
+                strength = strength,
+                azimuthOffset = azimuthOffset
+            };
+            return new FoundationEnvironmentGatherResult
+            {
+                Environment = environment,
+                HdriSidecar = new FoundationEnvironmentHdriSidecar
+                {
+                    RawBytes = rawBytes,
+                    FileName = fileName,
+                    EnvironmentPayload = environment
+                }
+            };
+        }
+
         static bool TryGetSkyboxHdriTexture(UnityEngine.Material skybox, out UnityEngine.Texture texture)
         {
             texture = null;
@@ -161,6 +188,11 @@ namespace GLTFast.Export
             }
 
             return $"{baseName}_environment.dds";
+        }
+
+        static string BuildHdriRawFileName()
+        {
+            return "unity-skybox_environment.hdr";
         }
     }
 }

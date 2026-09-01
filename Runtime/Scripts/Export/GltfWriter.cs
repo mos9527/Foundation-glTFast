@@ -1963,7 +1963,18 @@ namespace GLTFast.Export
                 }
 
                 var destPath = Path.Combine(directory, fileName);
-                if (!DdsRgbFloat32Writer.TryWriteTexture(sidecar.SourceTexture, destPath, true))
+                if (sidecar.RawBytes != null && sidecar.RawBytes.Length > 0)
+                {
+                    try
+                    {
+                        File.WriteAllBytes(destPath, sidecar.RawBytes);
+                    }
+                    catch (Exception exception)
+                    {
+                        m_Logger?.Warning(LogCode.None, $"Failed to write environment HDRI sidecar: {fileName} ({exception.Message})");
+                    }
+                }
+                else if (!DdsRgbFloat32Writer.TryWriteTexture(sidecar.SourceTexture, destPath, true))
                 {
                     m_Logger?.Warning(LogCode.None, $"Failed to write environment HDRI sidecar: {fileName}");
                 }

@@ -12,8 +12,9 @@ namespace GLTFast.Export
     public static class FoundationEnvironmentFallback
     {
         /// <summary>
-        /// Loads the baked default skybox HDRI. Set by glTFast.Editor on domain reload.
+        /// Loads the baked default skybox HDRI as raw bytes, ready to be written verbatim as an
+        /// <c>.hdr</c> sidecar. Set by glTFast.Editor on domain reload.
         /// </summary>
-        public static Func<UnityEngine.Texture> LoadDefaultSkyboxHdri { get; set; }
+        public static Func<byte[]> LoadDefaultSkyboxHdri { get; set; }
     }
 }
