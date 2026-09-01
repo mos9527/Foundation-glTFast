@@ -4,7 +4,6 @@
 using System.IO;
 using GLTFast.Export;
 using UnityEditor;
-using UnityEditor.PackageManager;
 using UnityEngine;
 
 namespace GLTFast.Editor
@@ -54,7 +53,7 @@ namespace GLTFast.Editor
                 return packagePath;
             }
 
-            var packageInfo = PackageInfo.FindForAssetPath(packagePath);
+            var packageInfo = UnityEditor.PackageManager.PackageInfo.FindForAssetPath(packagePath);
             if (packageInfo == null)
             {
                 // Embedded/local package: the Packages directory is directly readable.
